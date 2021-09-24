@@ -1,1 +1,2 @@
-# Fancy Bee NFT./n ## Follow me on twitter at @fancyB_nft
+# Fancy Bee NFT. 
+## Follow me on twitter at @fancyB_nft
