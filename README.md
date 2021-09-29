@@ -14,9 +14,6 @@
 
 6. Bees will double as stills and gifs.
 
-## Future plans
-**TBD**
-
 ## Questions to ponder: 
 
 1. What side-effects would occur with generative genesis bees?
@@ -30,3 +27,5 @@
 9. What am I not thinking of?
 
 
+## Future plans
+**TBD**
