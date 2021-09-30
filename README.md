@@ -2,7 +2,7 @@
 ## Follow me on twitter at @fancyB_nft
 
 ## Project ideas
-1. Fraction genesis pieces. Rarest will have functions that need majority to execute.
+1. Fractional genesis pieces. Rarest will have functions that need majority to execute.
 
 2. Genesis pieces will be spilt into "regions", each "region" will have one charity. 
 
