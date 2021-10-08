@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 //PR: import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
-//PR: import "./Royalty.sol"
+//PR: import "./Royalty.sol";
 
 //PR: contract FancyBee is ERC721, ERC2981ContractWideRoyalties {
 contract FancyBee is ERC721 {
