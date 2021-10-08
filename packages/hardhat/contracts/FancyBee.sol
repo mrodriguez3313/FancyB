@@ -5,6 +5,10 @@ import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
+//PR: import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
+//PR: "./Royalty.sol"
+
+//PR: contract FancyBee is ERC721, ERC2981ContractWideRoyalties {
 contract FancyBee is ERC721 {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
@@ -12,6 +16,7 @@ contract FancyBee is ERC721 {
 
     constructor(string memory tokenName, string memory symbol) ERC721(tokenName, symbol) {
         _setBaseURI("ipfs://");
+        //PR: _setRoyalties(msg.sender, 1000); // Set caller (DAO?) as Receiver and Roaylty as 10%
     }
 
     function mintToken(address owner, string memory metadataURI)
