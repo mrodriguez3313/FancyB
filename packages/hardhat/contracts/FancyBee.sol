@@ -12,6 +12,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 contract FancyBee is ERC721 {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
+
     uint totalBeeSupply = 5;
 
     constructor(string memory tokenName, string memory symbol) ERC721(tokenName, symbol) {
@@ -32,5 +33,10 @@ contract FancyBee is ERC721 {
         _setTokenURI(id, metadataURI);
 
         return id;
+    }
+    
+    function setTokenURI(uint256 _tokenId, string memory _tokenURI) external returns (string memory) {
+        _setTokenURI(_tokenId, _tokenURI);
+        return tokenURI(_tokenId);
     }
 }
