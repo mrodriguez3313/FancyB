@@ -42,7 +42,7 @@ import "./Royalty.sol";
 //import "./BeeNFT.sol";
 //import "./OutfitNFT.sol";
     
-contract FancyBsDAO is Ownable {
+contract FancyBDAO is Ownable {
     
     BeeNFT public beeNFT;
     OutfitNFT public outfitNFT; 
