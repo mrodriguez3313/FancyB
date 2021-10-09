@@ -4,17 +4,20 @@ pragma solidity ^0.8.2;
 // -------------
 // FANCY BEE DAO
 //
-// This DAO esponsible for managing the treasury and all other contracts including:
+
+// This DAO esponsible for managing the treasury and NFT other contracts:
 //  - BeeNFTs, 
-//  - HiveNFTs, 
-//  - OutfitNFTs 
+//  - OutfitNFTs
+//
+// The DAO is also a container that manages Hives (charitable organisations)
+//
 //
 // All operations that involve a royalty to the DAO must be mediated
 // thought this contract.
 //
-// The DAO is goverened though voting, where:
-// - each bee has a vote
-// - each Hive has a weighted vote.
+
+// The DAO is goverened though voting, where each bee has a vote
+
 // -------------
 
 // TODO delete these until compile fails :)
@@ -61,6 +64,7 @@ contract FancyBsDAO is Ownable {
 //  TODO: define governance by bees not ERC20
 //  FancyBsGov public votingToken;
 //  FancyBsGovenor public governor; 
+
     
     constructor(){
         //Create NFTs owned by the DAO
@@ -81,6 +85,7 @@ contract FancyBsDAO is Ownable {
         hiveNFT.transferOwnership(_addr);
         outfitNFT.transferOwnership(_addr);
 //      votingToken.transferOwnership(_addr);
+
     }
     
     //Recieve all ETH there.  (TODO: ERC20s are permissioned and accumulated in the ERC20 contract)
@@ -100,6 +105,7 @@ contract FancyBsDAO is Ownable {
     
     //
     // voting
+
     //
 
     uint256 proposalTimer;
@@ -112,6 +118,7 @@ contract FancyBsDAO is Ownable {
     
     function proposeDistribution(uint256 _beeID, address _recipient, uint256 _amount) public {
         require(proposalTimer != 0, "One at a time");
+
         // TODO FIX this - require(beeNFT.isOwnedBy(_beeID, msg.sender), "Only Bees"); //TODO how do we tell.
         require(_amount + 10^16 <= retained);
         proposalTimer = block.timestamp + 604800; // 1 Week to vote.
@@ -137,6 +144,7 @@ contract FancyBsDAO is Ownable {
     }
     
     function executeProposal(uint256 _beeID) public payable{
+        require(beeNFT.ownerOf(_beeID) == msg.sender, "Only Bees can trigger execution");
         require(block.timestamp > proposalTimer, "Too soon");
         require(proposalTimer >0, "No proposal");
         proposalTimer = 0; //prevent re-entry
@@ -156,8 +164,6 @@ contract FancyBsDAO is Ownable {
 
     }
     
-
-
     //
     // Governance functions - these are functions that the Governance contract is able to call
     //
@@ -168,8 +174,58 @@ contract FancyBsDAO is Ownable {
             require(treasury >3*10^18, "Less that 3 ETH");  //TODO Don't need this if reward is 0.25%
             require(block.timestamp > nextDistribution, "Too early");
             // TODO FIX this - require(beeNFT.isOwnedBy(_beeID, msg.sender), "Only Bees"); //TODO how do we tell.
-        
 
+    //
+    //HIVES
+    //
+    
+    // Hives are indexed by uint16 hiveID
+    mapping (uint16=> uint256) public hiveBalance;
+    mapping (uint16=> uint8) public hiveRatio;
+    mapping (uint16=> address) public hiveOwner;
+    
+    // Addresses can only have one hive.
+    mapping (address=> uint16) public hiveID;
+    
+    uint16 hiveCount = 0;
+
+    //Currently can only be added by the owner of the DAO conract.
+    //TODO need to make this a governance thing
+    function addHive(address _addr) public onlyOwner{
+        require(hiveID[_addr] != 0, "One hive per address");
+        require(hiveCount < 1000, "Only 100 hives allowed");
+        hiveOwner[hiveCount] = _addr;
+        hiveBalance[hiveCount] = 0;
+        hiveRatio[hiveCount] = 10; // this is a divisor * 10 (unused for now)
+        hiveID[_addr] = hiveCount;
+        hiveCount++;
+    }
+    
+    function removeHive(uint16 _hive) public onlyOwner{
+        require(hiveRatio[_hive] !=0, "Hive doen't exist");
+        hiveRatio[hiveCount] = 0; // Cannot be Zero so Zero means no hive.     
+        hiveCount--;
+    }
+    function setCharityRatio(uint16 _hive, uint8 _p ) public onlyOwner{
+        require(hiveRatio[_hive] !=0, "Hive doen't exist");   
+        require(_p >0 && _p<11, "Ratio arg must be 1-10");
+        hiveRatio[_hive] = _p; 
+    }
+    
+    function setDAOPercent(uint8 _p) public onlyOwner{
+        daoPercent = _p;
+    }
+    
+    // 
+    // Called by any bee for a small reward.
+    // Must have a significant balance and more then a week appart
+    //
+    function  distributeFunds(uint256 _beeID) public {
+        if (treasury >0){ //check for recursion here. treasury is set to 0 until we know remainder
+            require(beeNFT.ownerOf(_beeID) == msg.sender, "Only Bees can trigger distribution");
+            require(treasury >3*10^18, "Less that 3 ETH");  //TODO Don't need this if reward is 0.25%
+            require(block.timestamp > nextDistribution, "Too early");
+        
             uint _reward = 10^16;  // TODO make the reward ~0.25% percentage of the total.
             uint256 _treasury = treasury - _reward;
             treasury = 0; //protect from reentrance by removing any funds.
@@ -177,8 +233,7 @@ contract FancyBsDAO is Ownable {
             // Send the reward
             (bool sent1, bytes memory tmp1) = msg.sender.call{value: _reward}("");
             require(sent1, "Failed to send Ether");
-            
- 
+
             // take the amount for the DAO.
             uint256 amt = _treasury -_treasury*10000/daoPercent;
             
@@ -213,5 +268,23 @@ contract FancyBsDAO is Ownable {
     }
     
 */
-
+ 
+            // reserve the amount for the DAO.
+            uint256 amt = _treasury -_treasury*10000/daoPercent;
+            
+            // Calculate allocation for each hive
+            // TODO use the ratio. This assumes equality
+            uint256 _alloc = amt/hiveCount;
+            
+            //Send portion to each hive royalty address.
+            for (uint16 i=0; i<hiveCount; i++){
+                if (hiveRatio[i] !=0){ //Ignore deleted hives
+                    _treasury -= _alloc;
+                    (bool sent2, bytes memory tmp2) = hiveOwner[i].call{value: _alloc}("");
+                    require(sent2, "Failed to send Ether");
+                }
+            }
+            retained += _treasury; //Move the remainder into the retained funds
+        }
+    }
 }
