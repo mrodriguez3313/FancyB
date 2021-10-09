@@ -12,10 +12,12 @@ contract OutfitNFT is ERC721, FancyBee {
  
     Counters.Counter private _tokenIdCounter;
     
-    mapping (uint256=>address) beeNFT;
-    mapping (uint256=>uint256) beeTokenID;
+    mapping (uint256=>address) outfitOwnerBee; // maps outfitTokenID to the Bee contract that owns it. (User does not own outfits.)
+    mapping (uint256=>uint256) beeTokenID; 
 
-    constructor() ERC721("FancyOutfit", "FBOF") {}
+    constructor() ERC721("FancyOutfit", "FBOF") {
+        _setBaseURI("ipfs://");
+    }
 
     //TODO - register for ERC-1820
     //TODO Should split it 50:50 with th creator. Register Outfit with as royalty receiver and split.
@@ -34,7 +36,7 @@ contract OutfitNFT is ERC721, FancyBee {
     }
     
     function isOwnedBy(uint256 _beeID) public view returns (bool){
-        return(beeTokenID[_beeID] !=0);
+        return(beeTokenID[_beeID] != 0);
     }
 
     // Called by the DAO to ask outfit to attach to a bee. Must be called _before_ calling the bee
@@ -42,7 +44,7 @@ contract OutfitNFT is ERC721, FancyBee {
         require(msg.sender == fancyDAO, "Not fancyDAO");
         require (!_outfitExists(_outfitID), "Invalid outfit"); //check outfit exists.
         require (!_beeExists(_beeID), "Invalid bee"); //check the bee exists
-        require (beeNFT[_outfitID] == address(0) || beeTokenID[_outfitID] == 0, "Already taken"); //check the outfit it available
+        require (outfitOwnerBee[_outfitID] == address(0) && beeTokenID[_outfitID] == 0, "Already taken"); //check the outfit it available
         beeNFT[_outfitID] = _contract;
         beeTokenID[_outfitID] = _beeID;
         //  TODO _setTokenOWner(_contract, _beeID); //only the bee can control now (need better system)
