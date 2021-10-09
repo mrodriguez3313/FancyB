@@ -2,14 +2,11 @@
 pragma solidity ^0.7.0;
 import "./FancyBee.sol";
 
-// contract FancyBeeInterface {
 
-// }
-
-contract OutfitNFT is ERC721, ERC721Enumerable, FancyBee {    
+contract OutfitNFT is ERC721, FancyBee {    
 
     
-    address internal fancyDAO = msg.sender;
+    // address internal fancyDAO = msg.sender;
   
     using Counters for Counters.Counter;
  
@@ -32,7 +29,7 @@ contract OutfitNFT is ERC721, ERC721Enumerable, FancyBee {
     //
     
     // Returns True if the token exists, else false.
-    function _tokenExists(uint256 _tokenId) public view returns (bool){
+    function _outfitExists(uint256 _tokenId) public view returns (bool){
         return _exists(_tokenId);
     }
     
@@ -43,8 +40,8 @@ contract OutfitNFT is ERC721, ERC721Enumerable, FancyBee {
     // Called by the DAO to ask outfit to attach to a bee. Must be called _before_ calling the bee
     function attachToBee(uint256 _outfitID, address _contract, uint256  _beeID) public {
         require(msg.sender == fancyDAO, "Not fancyDAO");
-        require (!_tokenExists(_outfitID), "Invalid outfit"); //check outfit exists.
-        require (!BeeNFT[_contract]._tokenExists(_beeID), "Invalid bee"); //check the bee exists
+        require (!_outfitExists(_outfitID), "Invalid outfit"); //check outfit exists.
+        require (!_beeExists(_beeID), "Invalid bee"); //check the bee exists
         require (beeNFT[_outfitID] == address(0) || beeTokenID[_outfitID] == 0, "Already taken"); //check the outfit it available
         beeNFT[_outfitID] = _contract;
         beeTokenID[_outfitID] = _beeID;

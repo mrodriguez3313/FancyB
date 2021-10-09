@@ -57,18 +57,18 @@ contract FancyBee is ERC721 {
     // }
 
     // Returns True if the token exists, else false.
-    function _tokenExists(uint256 _tokenId) public view returns (bool){
+    function _beeExists(uint256 _tokenId) public view returns (bool){
         return _exists(_tokenId);
     }
 
-    // // Called by the DAO to attach an outfit to a bee.
-    function attachOutfit(uint256 _beeID, address _contract, uint256 _outfitID) public {
-        require(msg.sender == fancyDAO, "Not fancyDAO");
-        require (!_tokenExists(_beeID), "Invalid bee"); //check bee exists.
-        require (!OutfitNFT(_contract)._tokenExists(_outfitID), "Invalid outfit"); //check the outfit exists
-        require (OutfitNFT(_contract).isOwnedBy(_beeID), "Bee is not owner"); //check the outfit is ours
-        _setTokenURI(_beeID, OutfitNFT(_contract).tokenURI(_outfitID)); //can we reference it?
-        outfitNFT[_beeID] = _contract;
-        outfitTokenID[_beeID] = _outfitID;
-    }
+    // Called by the DAO to attach an outfit to a bee.
+    // function attachOutfit(uint256 _beeID, address _contract, uint256 _outfitID) public {
+    //     require(msg.sender == fancyDAO, "Not fancyDAO");
+    //     require (!_beeExists(_beeID), "Invalid bee"); //check bee exists.
+    //     require (!OutfitNFT(_contract)._beeExists(_outfitID), "Invalid outfit"); //check the outfit exists
+    //     require (OutfitNFT(_contract).isOwnedBy(_beeID), "Bee is not owner"); //check the outfit is ours
+    //     _setTokenURI(_beeID, OutfitNFT(_contract).tokenURI(_outfitID)); //can we reference it?
+    //     outfitNFT[_beeID] = _contract;
+    //     outfitTokenID[_beeID] = _outfitID;
+    // }
 }
