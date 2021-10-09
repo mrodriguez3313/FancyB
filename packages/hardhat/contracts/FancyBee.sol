@@ -8,13 +8,17 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/introspection/IERC165.sol";
 //import "./Royalty.sol";
 
+
 //PR: contract FancyBee is ERC721, ERC2981ContractWideRoyalties {
 contract FancyBee is ERC721 {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
-    address internal fancyDAO = msg.sender;
+    address internal fancyDAO;
     uint totalBeeSupply = 5;
+
+    mapping (uint256=>address) outfitNFT;
+    mapping (uint256=>uint256) outfitTokenID;
 
     constructor(string memory tokenName, string memory symbol) ERC721(tokenName, symbol) {
         _setBaseURI("ipfs://");
@@ -22,7 +26,7 @@ contract FancyBee is ERC721 {
     }
 
     // Modifier to check that the token is not <= 0.
-    modifier TIDoutOfRange(uint256 _tokenID){
+    modifier TIDoutOfRange(uint256 _tokenID) {
         require (_tokenID>0, "TokenID out of range");
         _;
     }
@@ -48,9 +52,9 @@ contract FancyBee is ERC721 {
         return tokenURI(_tokenId);
     }
 
-    function royaltyInfo(uint256 _tokenId, uint256 _price) external view TIDoutOfRange(_tokenId) returns (address receiver, uint256 amount){
-        return (fancyDAO, _price/10);
-    }
+    // function royaltyInfo(uint256 _tokenId, uint256 _price) external view TIDoutOfRange(_tokenId) returns (address receiver, uint256 amount){
+    //     return (fancyDAO, _price/10);
+    // }
 
     // Returns True if the token exists, else false.
     function _tokenExists(uint256 _tokenId) public view returns (bool){
@@ -58,13 +62,13 @@ contract FancyBee is ERC721 {
     }
 
     // // Called by the DAO to attach an outfit to a bee.
-    // function attachOutfit(uint256 _beeID, address _contract, uint256 _outfitID) public {
-    //     require(msg.sender == fancyDAO, "Not fancyDAO");
-    //     require (!_tokenExists(_beeID), "Invalid bee"); //check bee exists.
-    //     require (!OutfitNFT(_contract)._tokenExists(_outfitID), "Invalid outfit"); //check the outfit exists
-    //     require (OutfitNFT(_contract).isOwnedBy(_beeID), "Bee is not owner"); //check the outfit it ours
-    //     _setTokenURI(_beeID, OutfitNFT(_contract).tokenURI(_outfitID)); //can we reference it?
-    //     outfitNFT[_beeID] = _contract;
-    //     outfitTokenID[_beeID] = _outfitID;
-    // }
+    function attachOutfit(uint256 _beeID, address _contract, uint256 _outfitID) public {
+        require(msg.sender == fancyDAO, "Not fancyDAO");
+        require (!_tokenExists(_beeID), "Invalid bee"); //check bee exists.
+        require (!OutfitNFT(_contract)._tokenExists(_outfitID), "Invalid outfit"); //check the outfit exists
+        require (OutfitNFT(_contract).isOwnedBy(_beeID), "Bee is not owner"); //check the outfit is ours
+        _setTokenURI(_beeID, OutfitNFT(_contract).tokenURI(_outfitID)); //can we reference it?
+        outfitNFT[_beeID] = _contract;
+        outfitTokenID[_beeID] = _outfitID;
+    }
 }
