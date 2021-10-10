@@ -5,12 +5,18 @@ import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-import "@openzeppelin/contracts/introspection/IERC165.sol";
+// import "@openzeppelin/contracts/introspection/IERC165.sol";
 //import "./Royalty.sol";
 
 
 //PR: contract FancyBee is ERC721, ERC2981ContractWideRoyalties {
 contract FancyBee is ERC721 {
+
+    constructor(string memory tokenName, string memory symbol) ERC721(tokenName, symbol) {
+        _setBaseURI("ipfs://");
+        //PR: _setRoyalties(msg.sender, 1000); // Set caller (DAO?) as Receiver and Roaylty as 10%
+    }
+
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -19,11 +25,6 @@ contract FancyBee is ERC721 {
 
     mapping (uint256=>address) outfitNFT;
     mapping (uint256=>uint256) outfitTokenID;
-
-    constructor(string memory tokenName, string memory symbol) ERC721(tokenName, symbol) {
-        _setBaseURI("ipfs://");
-        //PR: _setRoyalties(msg.sender, 1000); // Set caller (DAO?) as Receiver and Roaylty as 10%
-    }
 
     // Modifier to check that the token is not <= 0.
     modifier TIDoutOfRange(uint256 _tokenID) {
@@ -57,7 +58,7 @@ contract FancyBee is ERC721 {
     // }
 
     // Returns True if the token exists, else false.
-    function _beeExists(uint256 _tokenId) public view returns (bool){
+    function _beeExists(uint256 _tokenId) external view returns (bool){
         return _exists(_tokenId);
     }
 

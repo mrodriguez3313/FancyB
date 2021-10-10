@@ -1,22 +1,26 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.0;
-import "./FancyBee.sol";
+
+import "hardhat/console.sol";
+// import "./FancyBee.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 
-contract OutfitNFT is ERC721, FancyBee {    
+contract OutfitNFT is ERC721 {    
 
-    
-    // address internal fancyDAO = msg.sender;
-  
+    address internal fancyDAO;
+
     using Counters for Counters.Counter;
- 
+   
     Counters.Counter private _tokenIdCounter;
     
     mapping (uint256=>address) outfitOwnerBee; // maps outfitTokenID to the Bee contract that owns it. (User does not own outfits.)
-    mapping (uint256=>uint256) beeTokenID; 
+    mapping (uint256=>uint256) beeTokenID; // 
 
-    constructor() ERC721("FancyOutfit", "FBOF") {
+    constructor(address DAOAddress) ERC721("FancyOutfit", "FBOF") {
         _setBaseURI("ipfs://");
+        fancyDAO = DAOAddress;
     }
 
     //TODO - register for ERC-1820
@@ -40,14 +44,20 @@ contract OutfitNFT is ERC721, FancyBee {
     }
 
     // Called by the DAO to ask outfit to attach to a bee. Must be called _before_ calling the bee
-    function attachToBee(uint256 _outfitID, address _contract, uint256  _beeID) public {
+    function attachToBee(uint256 _outfitID, address _beeContract, uint256  _beeID) public {
+        FancyBeeInterface fancyBee = FancyBeeInterface(_beeContract);
         require(msg.sender == fancyDAO, "Not fancyDAO");
         require (!_outfitExists(_outfitID), "Invalid outfit"); //check outfit exists.
-        require (!_beeExists(_beeID), "Invalid bee"); //check the bee exists
-        require (outfitOwnerBee[_outfitID] == address(0) && beeTokenID[_outfitID] == 0, "Already taken"); //check the outfit it available
-        beeNFT[_outfitID] = _contract;
-        beeTokenID[_outfitID] = _beeID;
+        require (!fancyBee._beeExists(_beeID), "Invalid bee"); //check the bee exists
+        // require (outfitOwnerBee[_outfitID] == address(0) && beeTokenID[_outfitID] == 0, "Already taken"); //check the outfit it available
+        // outfitOwnerBee[_outfitID] = _contract;
+        // beeTokenID[_outfitID] = _beeID;
         //  TODO _setTokenOWner(_contract, _beeID); //only the bee can control now (need better system)
         
     }
+}
+
+interface FancyBeeInterface {
+    function setTokenURI(uint256 _tokenId, string memory _tokenURI) external returns (string memory);
+    function _beeExists(uint256 _tokenId) external view returns (bool);
 }
