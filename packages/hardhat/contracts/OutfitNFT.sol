@@ -2,7 +2,7 @@
 pragma solidity ^0.7.0;
 
 import "hardhat/console.sol";
-// import "./FancyBee.sol";
+
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
@@ -15,8 +15,10 @@ contract OutfitNFT is ERC721 {
    
     Counters.Counter private _tokenIdCounter;
     
-    mapping (uint256=>address) outfitOwnerBee; // maps outfitTokenID to the Bee contract that owns it. (User does not own outfits.)
-    mapping (uint256=>uint256) beeTokenID; // 
+    mapping (uint256 => string) SecretURIs;
+    
+    mapping (uint256=>address) outfitOwnerBee; // maps outfitTokenID to the BeeTokenID that owns it. (User does not own outfits.)
+    mapping (uint256=>uint256) beeTokenID; // maps a BeeID to how many o
 
     constructor(address DAOAddress) ERC721("FancyOutfit", "FBOF") {
         _setBaseURI("ipfs://");
@@ -43,13 +45,18 @@ contract OutfitNFT is ERC721 {
         return(beeTokenID[_beeID] != 0);
     }
 
+    // Given an outfitId, return the the one with the bee attached.
+    function getTokenURI(uint _outfitId) external view returns (string memory) {
+        return SecretURIs[_outfitId];
+    }
+
     // Called by the DAO to ask outfit to attach to a bee. Must be called _before_ calling the bee
     function attachToBee(uint256 _outfitID, address _beeContract, uint256  _beeID) public {
         FancyBeeInterface fancyBee = FancyBeeInterface(_beeContract);
         require(msg.sender == fancyDAO, "Not fancyDAO");
         require (!_outfitExists(_outfitID), "Invalid outfit"); //check outfit exists.
         require (!fancyBee._beeExists(_beeID), "Invalid bee"); //check the bee exists
-        // require (outfitOwnerBee[_outfitID] == address(0) && beeTokenID[_outfitID] == 0, "Already taken"); //check the outfit it available
+        require (outfitOwnerBee[_outfitID] != address(0), "Already taken"); //check the outfit is available
         // outfitOwnerBee[_outfitID] = _contract;
         // beeTokenID[_outfitID] = _beeID;
         //  TODO _setTokenOWner(_contract, _beeID); //only the bee can control now (need better system)
