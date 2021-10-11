@@ -9,8 +9,9 @@ const main = async () => {
 
   console.log("\n\n 📡 Deploying...\n");
 
+  const thirdContract = await deploy("FancyBDAO", []); 
   const yourContract = await deploy("FancyBee", ["Fancy Bee NFT", "FBEE"]); // <-- add in constructor args like line 19 vvvv
-  // const secondContract = await deploy("OutfitNFT", ["FancyOutfit", "FBOF"]); 
+  const secondContract = await deploy("OutfitNFT", ["FancyOutfit", "FBOF"]); 
   //const yourContract = await ethers.getContractAt('YourContract', "0xaAC799eC2d00C013f1F11c37E654e59B0429DF6A") //<-- if you want to instantiate a version of a contract at a specific address!
 
   // const exampleToken = await deploy("ExampleToken")

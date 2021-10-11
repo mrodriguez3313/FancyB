@@ -284,9 +284,28 @@ function App(props) {
               />
           </Route>
 
-          <Route exact path="/contract">
+          {/* <Route exact path="/contract">
+            <Contract
+              name="FancyBDAO"
+              signer={userProvider.getSigner()}
+              provider={localProvider}
+              address={address}
+              blockExplorer={blockExplorer}
+            />
+          </Route> */}
+
+          {/* <Route exact path="/contract">
             <Contract
               name="FancyBee"
+              signer={userProvider.getSigner()}
+              provider={localProvider}
+              address={address}
+              blockExplorer={blockExplorer}
+            />
+          </Route> */}
+          <Route exact path="/contract">
+            <Contract
+              name="FancyBDAO"
               signer={userProvider.getSigner()}
               provider={localProvider}
               address={address}

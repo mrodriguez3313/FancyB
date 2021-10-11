@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.2;
+pragma solidity ^0.7.0;
 
 // -------------
 // FANCY BEE DAO
@@ -20,28 +20,27 @@ pragma solidity ^0.8.2;
 // TODO delete these until compile fails :)
 // TODO may need to add interfaces for dependancies in different files.
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+// import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+// import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+// import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Snapshot.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
+// import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+// import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+// import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Snapshot.sol";
+// import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
+// import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-
-import "@openzeppelin/contracts/security/Pausable.sol";
+// import "@openzeppelin/contracts/security/Pausable.sol";
 
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+// import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
-import "./Royalty.sol";
-//import "./BeeNFT.sol";
-//import "./OutfitNFT.sol";
+// import "./Royalty.sol";
+import "./FancyBee.sol";
+import "./OutfitNFT.sol";
     
-contract FancyBsDAO is Ownable {
+contract FancyBDAO is Ownable {
     
         
     mapping (uint16=> uint256) public hiveBalance;
@@ -55,32 +54,24 @@ contract FancyBsDAO is Ownable {
     uint256 public daoPercent;// % to be retained by DAO
     uint256 public nextDistribution; // Timer to prevent high gas fees
     
-    BeeNFT public beeNFT;
-    HiveNFT public hiveNFT;// Charity = Hive
-    OutfitNFT public outfitNFT; 
+    FancyBee public beeNFT; //contract address for beeNFT
+    OutfitNFT public outfitNFT; //contract address for outfitNFT
 //  TODO: define governance by bees not ERC20
 //  FancyBsGov public votingToken;
 //  FancyBsGovenor public governor; 
     
     constructor(){
         //Create NFTs owned by the DAO
-        beeNFT = new BeeNFT();
-        hiveNFT = new HiveNFT();
-        outfitNFT = new OutfitNFT();
-        
-        nextDistribution = block.timestamp + 604800;  // only allow distribution weekly
 
 //        votingToken = new FancyBsGov();
 //        governor = new FancyBsGovenor(votingToken);
-
     }
-    
-    // Allows the DAO to take ownership of the whole ecosystem.
-    function setOwnership(address _addr) public onlyOwner {
-        beeNFT.transferOwnership(_addr);
-        hiveNFT.transferOwnership(_addr);
-        outfitNFT.transferOwnership(_addr);
-//      votingToken.transferOwnership(_addr);
+
+    function initAddresses(FancyBee beeAddress, OutfitNFT outfitAddress) public {
+        require(beeNFT == FancyBee(0), "Already initialized.");
+        beeNFT = beeAddress;
+        outfitNFT = outfitAddress;
+        nextDistribution = block.timestamp + 604800;  // only allow distribution weekly
     }
     
     //Recieve all ETH there.  (TODO: ERC20s are permissioned and accumulated in the ERC20 contract)
@@ -92,9 +83,18 @@ contract FancyBsDAO is Ownable {
     // Interface to Beekeeper
     //
     function dressMe(uint256 _beeID, uint256 _outfitID) public payable {
-        require ( msg.value != 10^16, "Please send exactly x 0.01 ETH.");
+        // FancyBeeInterface fancyBee = FancyBeeInterface(beeNFT);
+        // FancyBeeInterface outfit = FancyBeeInterface(outfitNFT);
+
+        require(beeNFT.tokenExists(_beeID), "Bee does not exist.");
+        require(outfitNFT.tokenExists(_outfitID), "Outfit does not exist.");
+        require( msg.value != 10^16, "Please send exactly x 0.01 ETH.");
+
         outfitNFT.attachToBee(_outfitID, address(beeNFT), _beeID);
         beeNFT.attachOutfit(_beeID, address(outfitNFT), _outfitID);
+ 
+        beeNFT.setTokenURI(_beeID ,outfitNFT.getTokenURI(_outfitID));
+        
         treasury += msg.value;
     } 
     
@@ -214,4 +214,10 @@ contract FancyBsDAO is Ownable {
     
 */
 
+}
+
+interface FancyBeeInterface {
+    function setTokenURI(uint256 _tokenId, string memory _tokenURI) external returns (string memory);
+    function getTokenURI(uint _outfitId) external view returns (string memory);
+    function tokenExists(uint256 _tokenId) external view returns (bool);
 }
