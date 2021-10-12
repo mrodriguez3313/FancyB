@@ -249,6 +249,16 @@ function App(props) {
               Mint an NFT
             </Link>
           </Menu.Item>
+          {/* <Menu.Item key="/">
+            <Link
+              onClick={() => {
+                setRoute("/");
+              }}
+              to="/"
+            >
+              Mint an NFT
+            </Link>
+          </Menu.Item> */}
           <Menu.Item key="/viewBees">
             <Link
               onClick={() => { setRoute("/viewBees"); }}

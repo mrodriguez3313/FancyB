@@ -3,13 +3,13 @@
 
 ## EthGlobal Demo
 
-1. Bees will be free minted, user pays gas fees. Bees will not come with clothing, you will have to buy clothing and their traits and stats are revealed at the time of purchase.
+1. Bees will be free minted, user pays gas fees. Bees will not come with clothing, you will have to buy the clothing to dress them.
 
-2. User will mint & buy on our dapp and be able to preview how it looks with it on. 
+2. User will mint a bee & and an outfit on our dapp and combine the NFTs through the DAO. 
 
-3. Transactions will go through a DAO & royalities will be sent to the Treasury and the Charity.
+<!-- 3. Transactions will go through a DAO & royalities will be sent to the Treasury and the Charity.
 
-4. A bee can pay to reroll base stats and even outfit stats.
+4. A bee can pay to reroll base stats and even outfit stats. -->
 
 ## Project ideas
 1. Genesis pieces: Rarest will have best traits and properties.
