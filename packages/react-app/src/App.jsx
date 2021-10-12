@@ -249,11 +249,18 @@ function App(props) {
               Mint an NFT
             </Link>
           </Menu.Item>
-          <Menu.Item key="/view">
+          <Menu.Item key="/viewBees">
             <Link
-              onClick={() => { setRoute("/view"); }}
-              to="/view">View an NFT</Link>
+              onClick={() => { setRoute("/viewBees"); }}
+              to="/viewBees">Find a Bee</Link>
           </Menu.Item>
+
+          <Menu.Item key="/viewOutfits">
+            <Link
+              onClick={() => { setRoute("/viewOutfits"); }}
+              to="/viewOutfits">Find an Outfit</Link>
+          </Menu.Item>
+
           <Menu.Item key="/contract">
             <Link
               onClick={() => {
@@ -261,7 +268,27 @@ function App(props) {
               }}
               to="/contract"
             >
-              Fancy Contract
+              DAO Contract
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="/outfit">
+            <Link
+              onClick={() => {
+                setRoute("/outfit");
+              }}
+              to="/outfit"
+            >
+              Outfit Contract 
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="/bee">
+            <Link
+              onClick={() => {
+                setRoute("/bee");
+              }}
+              to="/bee"
+            >
+              Bee Contract 
             </Link>
           </Menu.Item>
         </Menu>
@@ -276,33 +303,24 @@ function App(props) {
             />
           </Route>
 
-          <Route path="/view">
+          <Route path="/viewBees">
               <NFTViewer
+                name={"FancyBee"}
                 provider={localProvider}
                 address={address}
                 blockExplorer={blockExplorer}
               />
           </Route>
 
-          {/* <Route exact path="/contract">
-            <Contract
-              name="FancyBDAO"
-              signer={userProvider.getSigner()}
-              provider={localProvider}
-              address={address}
-              blockExplorer={blockExplorer}
-            />
-          </Route> */}
+          <Route path="/viewOutfits">
+              <NFTViewer
+                name={"OutfitNFT"}
+                provider={localProvider}
+                address={address}
+                blockExplorer={blockExplorer}
+              />
+          </Route>
 
-          {/* <Route exact path="/contract">
-            <Contract
-              name="FancyBee"
-              signer={userProvider.getSigner()}
-              provider={localProvider}
-              address={address}
-              blockExplorer={blockExplorer}
-            />
-          </Route> */}
           <Route exact path="/contract">
             <Contract
               name="FancyBDAO"
@@ -312,6 +330,27 @@ function App(props) {
               blockExplorer={blockExplorer}
             />
           </Route>
+
+          <Route exact path="/outfit">
+            <Contract
+              name="OutfitNFT"
+              signer={userProvider.getSigner()}
+              provider={localProvider}
+              address={address}
+              blockExplorer={blockExplorer}
+            />
+          </Route>
+
+          <Route exact path="/bee">
+            <Contract
+              name="FancyBee"
+              signer={userProvider.getSigner()}
+              provider={localProvider}
+              address={address}
+              blockExplorer={blockExplorer}
+            />
+          </Route>
+
         </Switch>
       </BrowserRouter>
 
