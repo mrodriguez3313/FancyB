@@ -41,7 +41,7 @@
 # TBA
 
 
-# 🎟 nft-e2e-example
+# 🎟 Forked from nft-e2e-example
 
 > An end-to-end example of minting NFTs on Ethereum from your browser. Powered by nft.storage and scaffold-eth!
 
@@ -54,9 +54,9 @@ required: [Node](https://nodejs.org/dist/latest-v12.x/) plus [Yarn](https://clas
 Clone this repository:
 
 ```bash
-git clone https://github.com/yusefnapora/nft-e2e-example
+git clone https://github.com/mrodriguez3313/FancyB.git
+cd FancyB
 
-cd nft-e2e-example
 ```
 
 Install dependencies:
@@ -78,7 +78,7 @@ yarn start
 > in a second terminal window:
 
 ```bash
-cd nft-e2e-example
+cd FancyB
 yarn chain
 
 ```
@@ -86,7 +86,7 @@ yarn chain
 > in a third terminal window:
 
 ```bash
-cd nft-e2e-example
+cd FancyB
 yarn deploy
 
 ```

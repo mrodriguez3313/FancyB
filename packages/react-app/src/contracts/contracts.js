@@ -1,1 +1,1 @@
-module.exports = ["FancyBee"];
+module.exports = ["FancyBDAO","FancyBee","OutfitNFT"];

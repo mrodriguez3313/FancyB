@@ -118,7 +118,7 @@ export default function NFTViewer({
       <Card
         title={
           <div>
-            View an NFT
+            View a {name}
             <div style={{ float: "right" }}>
               <Account
                 address={address}
